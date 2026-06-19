@@ -1,33 +1,48 @@
-# Trabalho Final — Análise Comparativa com Dados Reais
-## Disciplina: Ciência de Dados — 2026.1
+# Trabalho Final — Recuperação da Informação (2026.1)
 
-### 👥 Identificação do Grupo e Integrantes
-* **Integrante 1:** [Nome Completo] — `@sempreceub.com`
-* **Integrante 2:** [Nome Completo] — `@sempreceub.com`
-* **Integrante 3:** [Nome Completo] — `@sempreceub.com`
-* **Integrante 4:** [Nome Completo] — `@sempreceub.com`
+Disciplina: Recuperação da Informação
+Curso: Bacharelado em Ciência de Dados e Machine Learning — CEUB
+Professor: MSc. Weslley Rodrigues
+Entrega e apresentação: 22/06/2026
 
----
-
-### 🎯 1. Objetivo do Trabalho e Pergunta de Pesquisa
-O objetivo deste projeto é cruzar o panorama de competências dos profissionais de tecnologia no Brasil com as exigências atuais do mercado de trabalho.
-
-* **Pergunta de Pesquisa:** *"Quais são os principais desalinhamentos (gaps) entre as competências dominadas pelos profissionais de dados no Brasil (série histórica State of Data) e os requisitos técnicos mais frequentes exigidos pelas vagas ativas capturadas via API/Web Scraping?"*
+Este repositório contém a consolidação, coleta e análise de dados exigidas para o Trabalho Final, integrando a pesquisa State of Data Brazil com dados reais de vagas de tecnologia.
 
 ---
 
-### 📁 2. Estrutura do Repositório
-* `consolidar_state_of_data.py`: Script que automatiza a unificação das pesquisas State of Data (2021-2025) num arquivo `.parquet`.
-* `coleta_base_externa.py`: Script de captura automatizada de vagas de tecnologia via API Pública / Web Scraping.
-* `notebook_principal.ipynb`: Jupyter Notebook contendo a limpeza, integração, aplicação do Modelo Vetorial (TF-IDF) e as visualizações analíticas.
-* `relatorio_analitico.pdf`: Relatório final estruturado para entrega.
+## Como executar
+
+Para reproduzir este projeto do zero, siga os passos abaixo estando na raiz do repositório:
+
+# 1. Instalar dependências
+pip install -r requirements.txt
+
+# 2. Consolidar o State of Data (gera o .parquet em data/)
+python src/coleta/consolida_state_of_data.py
+
+# 3. Coletar a base externa (Vagas via API/Scraping)
+python src/coleta/coleta_externa.py
+
+# 4. Limpar e integrar
+python src/limpeza/integra.py
+
+# 5. Gerar o relatório
+# Abra o arquivo relatorio.ipynb no Jupyter/VS Code e execute todas as células.
 
 ---
 
-### 🚀 3. Como Executar o Projeto (Reprodutibilidade)
+## Identificação do grupo
 
-#### Passo 1: Clonar o repositório e instalar dependências
-```bash
-git clone <link-do-seu-repositorio-privado>
-cd <nome-do-repositorio>
-pip install pandas pyarrow requests beautifulsoup4 scikit-learn matplotlib seaborn
+**Nome do grupo:** Data Mappers
+**Tema / pergunta de pesquisa:** Quais são os principais desalinhamentos (gaps) entre as competências dominadas pelos profissionais de dados no Brasil e os requisitos técnicos exigidos pelas vagas ativas?
+**Base externa escolhida (fonte + método de coleta):** API Pública do Adzuna (ou GitHub Jobs) coletada programaticamente via script Python (`requests`).
+
+**Integrantes:**
+| Nome | Matrícula | E-mail institucional | Usuário GitHub |
+| :--- | :--- | :--- | :--- |
+| [Nome 1] | [Matrícula] | `nome1@sempreceub.com` | `@usuario1` |
+| [Nome 2] | [Matrícula] | `nome2@sempreceub.com` | `@usuario2` |
+| [Nome 3] | [Matrícula] | `nome3@sempreceub.com` | `@usuario3` |
+| [Nome 4] | [Matrícula] | `nome4@sempreceub.com` | `@usuario4` |
+
+**Modelo(s) de RI utilizado(s):** Modelo Vetorial com ponderação TF-IDF (Term Frequency-Inverse Document Frequency).
+**Resumo do projeto:** O trabalho integra a base State of Data Brazil (2021-2025) com vagas de tecnologia coletadas via API. Aplicamos o modelo vetorial TF-IDF para extrair a relevância de competências técnicas nas descrições de vagas e cruzamos com as habilidades autodeclaradas pelos profissionais, identificando lacunas no mercado.
