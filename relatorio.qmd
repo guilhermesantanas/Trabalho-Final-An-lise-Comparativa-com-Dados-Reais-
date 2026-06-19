@@ -1,0 +1,64 @@
+---
+title: "Relatório Analítico: Mapeamento de Competências em Ciência de Dados"
+subtitle: "Trabalho Final — Recuperação da Informação (2026.1)"
+author: 
+  - "[Nome do Integrante 1] (Matrícula: XXX)"
+  - "[Nome do Integrante 2] (Matrícula: XXX)"
+  - "[Nome do Integrante 3] (Matrícula: XXX)"
+  - "[Nome do Integrante 4] (Matrícula: XXX)"
+date: "2026-06-22"
+format:
+  pdf:
+    toc: true
+    number-sections: true
+    colorlinks: true
+---
+
+## Identificação do Grupo e Contexto
+Este relatório foi desenvolvido como requisito avaliativo para a disciplina de Recuperação da Informação do curso de Bacharelado em Ciência de Dados e Machine Learning do CEUB (2026.1), sob a orientação do Professor MSc. Weslley Rodrigues.
+
+## Objetivo Analítico e Pergunta de Pesquisa
+O mercado de tecnologia passa por constantes mutações. Profissionais recém-formados ou em transição de carreira frequentemente enfrentam dificuldades para entender quais competências são prioritárias. 
+
+* **Pergunta de Pesquisa:** *Quais são os principais desalinhamentos (gaps) entre as competências dominadas pelos profissionais de dados no Brasil (Série Histórica State of Data) e os requisitos técnicos mais frequentes exigidos pelas vagas ativas capturadas via API?*
+
+## Descrição das Bases de Dados
+Para responder à pergunta, o projeto integrou duas bases de dados:
+
+1. **Base 1 — State of Data Brazil (2021–2025):** Microdados consolidados da maior pesquisa sobre o mercado de dados no país. Contém variáveis socioeconômicas, cargos, salários e as ferramentas mais utilizadas pelos profissionais no dia a dia.
+2. **Base 2 — Vagas de Tecnologia (Fonte Externa):** Dados abertos coletados via API pública contendo títulos de vagas e descrições textuais (*job descriptions*) de oportunidades ativas no mercado de tecnologia.
+
+## Coleta de Dados (Reprodutibilidade)
+A coleta foi realizada de forma 100% programática através de scripts Python:
+* O script `src/coleta/consolida_state_of_data.py` unificou os arquivos anuais e os salvou no formato binário de alta performance `data/state_of_data_2021_2025.parquet`.
+* O script `src/coleta/coleta_externa.py` realizou requisições HTTP para a API de vagas, estruturando o arquivo `data/vagas_raw.csv`.
+
+## Limpeza, Transformação e Integração
+O script `src/limpeza/integra.py` padronizou as strings das descrições das vagas (conversão para minúsculas e remoção de caracteres especiais) e preparou os dados textuais para o pipeline de Recuperação da Informação.
+
+## Modelo de Recuperação da Informação Utilizado
+Optamos pelo **Modelo Vetorial com ponderação TF-IDF (Term Frequency-Inverse Document Frequency)**. 
+
+A justificativa para essa escolha reside no fato de que descrições de vagas são textos não estruturados. Filtros booleanos simples (como buscar apenas "Python") falham em medir a *relevância* do termo no documento. O TF-IDF penaliza palavras comuns e exalta as tecnologias que realmente definem o perfil técnico da vaga.
+
+Abaixo, o código executa o modelo estatístico diretamente sobre a base integrada:
+
+```{python}
+#| echo: true
+import pandas as pd
+import numpy as np
+from sklearn.feature_extraction.text import TfidfVectorizer
+
+# Carregando bases tratadas
+df_vagas = pd.read_csv("data/base_integrada_limpa.csv")
+
+# Vocabulário de habilidades extraídas do State of Data para a consulta
+skills = ['python', 'sql', 'pyspark', 'airflow', 'aws', 'azure', 'power bi', 'kubernetes']
+
+# Inicializando o Modelo Vetorial TF-IDF
+vectorizer = TfidfVectorizer(vocabulary=skills, lowercase=True)
+tfidf_matrix = vectorizer.fit_transform(df_vagas['descricao_limpa'])
+
+# Extraindo os pesos médios de importância
+pesos = np.asarray(tfidf_matrix.mean(axis=0)).ravel()
+df_ri = pd.DataFrame({'Habilidade': skills, 'Importancia_TFIDF': pesos}).sort_values(by='Importancia_TFIDF', ascending=False)
